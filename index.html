@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuestras Aventuras ❤️</title>
+  <!-- Tailwind CSS para estilos modernos y responsivos -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Playfair Display para títulos románticos e Inter para lectura limpia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fff5f7 0%, #fff0f3 50%, #fdf2f8 100%);
+      color: #3f2e3e;
+      overflow-x: hidden;
+    }
+
+    .font-serif-romantic {
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Animaciones suaves para transiciones entre pantallas */
+    .fade-in {
+      animation: fadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Latido de corazón en pantalla de carga */
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.15); }
+      45% { transform: scale(0.95); }
+      65% { transform: scale(1.12); }
+    }
+
+    .animate-heartbeat {
+      animation: heartbeat 1.4s infinite ease-in-out;
+    }
+
+    /* Sacudida suave si responde incorrectamente */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .animate-shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    /* Confeti flotante */
+    .confetti-piece {
+      position: fixed;
+      top: -20px;
+      z-index: 50;
+      pointer-events: none;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+
+  <!-- ===================================================================== -->
+  <!-- PANTALLA 1: FAKE LOADING (CARGA ROMÁNTICA INICIAL)                    -->
+  <!-- ===================================================================== -->
+  <section id="screen-loading" class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-rose-100 p-8 text-center fade-in">
+    <div class="relative w-24 h-24 mx-auto mb-6 flex items-center justify-center bg-rose-50 rounded-full border-2 border-rose-200 shadow-inner">
+      <!-- Icono SVG de Corazón con destellos -->
+      <svg class="w-12 h-12 text-rose-500 animate-heartbeat" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      <span class="absolute -top-1 -right-1 text-xl">✨</span>
+      <span class="absolute bottom-0 -left-2 text-lg">💖</span>
+    </div>
+
+    <h1 class="font-serif-romantic text-2xl font-bold text-rose-900 mb-2">Preparando nuestra historia...</h1>
+    <p id="loading-status-text" class="text-sm text-rose-600 font-medium h-6 mb-6 transition-all duration-300">
+      Cargando recuerdos...
+    </p>
+
+    <!-- Barra de progreso -->
+    <div class="w-full bg-rose-100 rounded-full h-3 overflow-hidden p-0.5 shadow-inner">
+      <div id="loading-progress-bar" class="bg-gradient-to-r from-rose-400 via-pink-500 to-amber-400 h-full rounded-full transition-all duration-200 ease-out" style="width: 0%"></div>
+    </div>
+    <p id="loading-percentage" class="text-xs text-rose-400 font-semibold mt-2">0%</p>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- PANTALLA 2: MENÚ PRINCIPAL DE MISIONES (QUEST LOG)                    -->
+  <!-- ===================================================================== -->
+  <main id="screen-menu" class="hidden w-full max-w-lg fade-in">
+    <!-- Encabezado de bienvenida -->
+    <header class="text-center mb-6">
+      <span class="inline-block px-3.5 py-1 rounded-full bg-amber-100/80 text-amber-800 text-xs font-bold tracking-wider uppercase mb-2 border border-amber-200">
+        Diario de Aventuras ✨
+      </span>
+      <h1 id="menu-title" class="font-serif-romantic text-3xl sm:text-4xl font-bold text-rose-950 mb-1">
+        Nuestras Misiones
+      </h1>
+      <p id="menu-subtitle" class="text-sm sm:text-base text-rose-700/80">
+        Selecciona una misión disponible para desbloquear tu sorpresa.
+      </p>
+    </header>
+
+    <!-- Contenedor dinámico de tarjetas de Misiones (Quests) -->
+    <div id="quests-container" class="space-y-4">
+      <!-- Se rellena automáticamente desde CONFIG.quests -->
+    </div>
+
+    <footer class="text-center mt-8 space-y-2">
+      <p class="text-xs text-rose-400 font-medium">
+        Hecho con todo mi amor ❤️ • Más misiones próximamente
+      </p>
+      <!-- Botón discreto para reiniciar progreso mientras haces pruebas -->
+      <button onclick="requestResetProgress()" class="text-[11px] text-rose-300 hover:text-rose-500 underline underline-offset-2 transition">
+        Reiniciar progreso guardado
+      </button>
+      <div id="reset-confirm-box" class="hidden mt-2 p-3 bg-white/90 rounded-2xl border border-rose-200 shadow-sm max-w-xs mx-auto">
+        <p class="text-xs text-rose-900 font-medium mb-2">¿Seguro que quieres borrar el progreso guardado?</p>
+        <div class="flex justify-center gap-2">
+          <button onclick="confirmResetProgress()" class="px-3 py-1 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700">Sí, reiniciar</button>
+          <button onclick="cancelResetProgress()" class="px-3 py-1 bg-rose-100 text-rose-800 text-xs font-semibold rounded-lg hover:bg-rose-200">Cancelar</button>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- PANTALLA 3: QUIZ INTERACTIVO DE LA MISIÓN                             -->
+  <!-- ===================================================================== -->
+  <section id="screen-quiz" class="hidden w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl shadow-xl border border-rose-100 overflow-hidden fade-in">
+    <!-- Barra superior del Quiz -->
+    <div class="bg-rose-50/80 px-6 py-4 border-b border-rose-100 flex items-center justify-between">
+      <button onclick="goToMenu()" class="text-xs font-semibold text-rose-600 hover:text-rose-800 flex items-center gap-1 py-1 px-2 rounded-lg hover:bg-rose-100/60 transition">
+        <span>←</span> Misiones
+      </button>
+      <span id="quiz-progress-label" class="text-xs font-bold text-rose-800 bg-white px-3 py-1 rounded-full shadow-sm border border-rose-100">
+        Pregunta 1 de 4
+      </span>
+    </div>
+
+    <!-- Barra de progreso visual del Quiz -->
+    <div class="w-full bg-rose-100 h-1.5">
+      <div id="quiz-progress-bar" class="bg-gradient-to-r from-rose-400 to-pink-500 h-full transition-all duration-500" style="width: 25%"></div>
+    </div>
+
+    <!-- Contenido de la pregunta -->
+    <div class="p-6 sm:p-8">
+      <!-- Contenedor opcional de imagen de la pregunta -->
+      <div id="quiz-image-wrapper" class="hidden mb-5 rounded-2xl overflow-hidden border border-rose-100 shadow-sm bg-rose-50">
+        <img id="quiz-image" src="" alt="Recuerdo" class="w-full h-48 sm:h-56 object-cover" />
+      </div>
+
+      <!-- Texto de la pregunta -->
+      <h2 id="quiz-question-text" class="font-serif-romantic text-xl sm:text-2xl font-bold text-rose-950 mb-6 leading-snug">
+        Cargando pregunta...
+      </h2>
+
+      <!-- Opciones de respuesta (para preguntas tipo "choice") -->
+      <div id="quiz-options-container" class="space-y-3">
+        <!-- Botones generados dinámicamente -->
+      </div>
+
+      <!-- Campo de texto libre (para preguntas tipo "text") -->
+      <form id="quiz-text-form" onsubmit="handleTextSubmit(event)" class="hidden space-y-3">
+        <textarea
+          id="quiz-text-input"
+          rows="3"
+          placeholder="Escribe tu respuesta aquí, mi amor..."
+          class="w-full p-4 rounded-2xl border-2 border-rose-200 bg-rose-50/30 focus:bg-white focus:border-rose-400 focus:outline-none text-rose-950 text-sm sm:text-base transition resize-none"
+        ></textarea>
+        <button
+          type="submit"
+          class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-semibold text-sm sm:text-base shadow-md hover:shadow-lg transition active:scale-[0.99]"
+        >
+          Enviar respuesta 💌
+        </button>
+      </form>
+
+      <!-- Mensaje de retroalimentación (Acierto o Error amigable) -->
+      <div id="quiz-feedback" class="hidden mt-5 p-4 rounded-2xl text-sm font-medium text-center transition-all">
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- PANTALLA 4: RECOMPENSA FINAL Y UBICACIÓN DEL REGALO                   -->
+  <!-- ===================================================================== -->
+  <section id="screen-reward" class="hidden w-full max-w-lg bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-amber-200/80 overflow-hidden fade-in">
+    <!-- Cabecera festiva -->
+    <div class="bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 p-6 text-center text-white relative">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm mb-3 text-3xl shadow-md">
+        🎁
+      </div>
+      <p class="text-xs font-bold uppercase tracking-widest text-amber-100 mb-1">¡Misión Completada!</p>
+      <h2 id="reward-title" class="font-serif-romantic text-2xl sm:text-3xl font-bold">
+        ¡Feliz Aniversario, Mi Amor!
+      </h2>
+    </div>
+
+    <div class="p-6 sm:p-8 space-y-6">
+      <!-- Imagen conmemorativa final -->
+      <div id="reward-image-wrapper" class="rounded-2xl overflow-hidden border border-rose-100 shadow-md">
+        <img id="reward-image" src="" alt="Nosotros" class="w-full h-52 object-cover" />
+      </div>
+
+      <!-- Carta / Dedicatoria romántica -->
+      <div class="bg-rose-50/70 rounded-2xl p-5 border border-rose-100 text-rose-900">
+        <p id="reward-message" class="text-sm sm:text-base leading-relaxed whitespace-pre-line italic">
+          <!-- Mensaje personalizado desde CONFIG -->
+        </p>
+      </div>
+
+      <!-- Recuerdo de las respuestas que ella escribió en las preguntas abiertas -->
+      <div id="reward-saved-notes-wrapper" class="hidden bg-white rounded-2xl p-5 border border-rose-200/80 shadow-sm space-y-3">
+        <div class="flex items-center gap-2 text-rose-700 font-bold text-xs uppercase tracking-wider">
+          <span>✍️</span>
+          <span>Tus palabras guardadas</span>
+        </div>
+        <div id="reward-saved-notes-list" class="space-y-3 text-sm text-rose-950">
+          <!-- Se rellena automáticamente si hubo preguntas de texto -->
+        </div>
+      </div>
+
+      <!-- Tarjeta de Ubicación Secreta del Regalo -->
+      <div class="bg-gradient-to-br from-amber-50 to-rose-50 rounded-2xl p-5 border-2 border-dashed border-amber-300 shadow-inner">
+        <div class="flex items-center gap-2 text-amber-800 font-bold text-xs uppercase tracking-wider mb-2">
+          <span>📍</span>
+          <span>Ubicación Secreta de tu Regalo</span>
+        </div>
+        
+        <h3 id="reward-location-name" class="font-serif-romantic text-xl font-bold text-rose-950 mb-1">
+          [Nombre del lugar o habitación]
+        </h3>
+        
+        <p id="reward-location-details" class="text-sm text-rose-800 mb-4 leading-relaxed">
+          [Instrucciones exactas o pista final para encontrarlo]
+        </p>
+
+        <!-- Botón opcional para abrir Google Maps o copiar coordenadas -->
+        <div class="flex flex-wrap gap-2">
+          <a id="reward-maps-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden flex-1 text-center bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-xl shadow transition">
+            🗺️ Abrir en Google Maps
+          </a>
+          <button onclick="copyLocationText()" class="flex-1 bg-white hover:bg-amber-50 text-amber-900 border border-amber-300 text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-xl shadow-sm transition">
+            📋 Copiar pista
+          </button>
+        </div>
+        <p id="copy-confirmation" class="hidden text-xs text-emerald-600 font-semibold text-center mt-2">
+          ¡Ubicación copiada al portapapeles! ✨
+        </p>
+      </div>
+
+      <!-- Botón para volver al menú principal -->
+      <div class="text-center pt-2">
+        <button onclick="goToMenu()" class="text-xs font-semibold text-rose-500 hover:text-rose-700 underline underline-offset-4">
+          Volver al diario de misiones
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- ⚙️ CONFIGURACIÓN PRINCIPAL (¡EDITA AQUÍ TUS PREGUNTAS, FOTOS Y TEXTO!) -->
+  <!-- ===================================================================== -->
+  <script>
+    const CONFIG = {
+      // Clave única para guardar el progreso en el navegador (ideal para GitHub Pages)
+      // Si en el futuro haces otra versión, cambia este nombre (ej. "aniversario_quest_v2")
+      storageKey: "nuestras_aventuras_aniversario_v1",
+
+      // 1. Mensajes que aparecen durante la pantalla de carga inicial ("fake loading")
+      loadingDurationMs: 3600, // Duración total en milisegundos (3.6 segundos)
+      loadingMessages: [
+        "Cargando nuestros mejores recuerdos...",
+        "Calibrando niveles de amor al 100%...",
+        "Escondiendo pistas secretas...",
+        "¡Todo listo para ti, mi amor! ❤️"
+      ],
+
+      // 2. Textos del Menú Principal
+      menuTitle: "Nuestras Aventuras ❤️",
+      menuSubtitle: "Elige una misión para descubrir tu sorpresa especial.",
+
+      // 3. Lista de Misiones (Quests)
+      // Puedes añadir más en el futuro cambiando `locked: false` y agregando sus preguntas.
+      quests: [
+        {
+          id: "aniversario-1",
+          badge: "Misión #1 • Disponible",
+          title: "Nuestro Primer Aniversario",
+          description: "Demuestra cuánto recuerdas de nuestra historia y desbloquea la ubicación de tu regalo.",
+          image: "https://placehold.co/600x300/ffe4e6/9f1239?text=Foto+de+Portada+Aniversario+%E2%9D%A4%EF%B8%8F", // <-- REEMPLAZA CON TU FOTO (ej: "fotos/portada.jpg")
+          locked: false
+        },
+        {
+          id: "cumpleanos-futuro",
+          badge: "Misión #2 • Próximamente",
+          title: "Tu Próximo Cumpleaños",
+          description: "Esta aventura aún se está escribiendo. ¡Vuelve más adelante!",
+          image: "",
+          locked: true
+        },
+        {
+          id: "viaje-secreto",
+          badge: "Misión #3 • Bloqueado",
+          title: "Escapada Sorpresa",
+          description: "Un destino misterioso espera por nosotros...",
+          image: "",
+          locked: true
+        }
+      ],
+
+      // 4. Preguntas del Quiz de Aniversario
+      // Soporta DOS tipos de preguntas:
+      //   A) type: "choice" -> Opciones múltiples (usa `options` y `correctIndex`).
+      //   B) type: "text"   -> Para escribir con el teclado:
+      //      - Si quieres validar una palabra/frase exacta: pon `anyAnswerValid: false` y lista las respuestas válidas en `acceptedAnswers: ["café", "el cafe"]` (ignora mayúsculas y tildes automáticamente).
+      //      - Si es una pregunta abierta romántica: pon `anyAnswerValid: true` y cualquier cosa que escriba será aceptada y guardada.
+      questions: [
+        {
+          type: "choice",
+          question: "[PREGUNTA 1 (Opción múltiple): Ej. ¿Dónde fue nuestra primera cita oficial?]",
+          image: "https://placehold.co/600x350/fff1f2/be123c?text=Foto+Recuerdo+1+(Opcional)",
+          options: [
+            "Opción A (Ejemplo: En el café del centro)",
+            "Opción B (Ejemplo: En el cine)",
+            "Opción C (Ejemplo: En el parque)",
+            "Opción D (Ejemplo: Cenando pizza)"
+          ],
+          correctIndex: 0, // <-- 0 significa que la Opción A es la correcta
+          successMessage: "¡Exacto! Nunca voy a olvidar ese día tan mágico. 🥰",
+          errorMessage: "¡Casi! Piénsalo un poquito más, mi amor... ¡tú sabes! 😘"
+        },
+        {
+          type: "text",
+          question: "[PREGUNTA 2 (Escribir respuesta exacta): Ej. ¿Cómo nos llamamos de cariño o cuál es nuestra palabra secreta?]",
+          image: "https://placehold.co/600x350/fef3c7/92400e?text=Foto+Recuerdo+2+(Opcional)",
+          placeholder: "Escribe aquí nuestra palabra...",
+          anyAnswerValid: false, // <-- false = debe coincidir con una de las respuestas de abajo
+          acceptedAnswers: [
+            "ejemplo",
+            "mi vida",
+            "gordito"
+          ],
+          successMessage: "¡Siii, lo acertaste a la perfección! ❤️",
+          errorMessage: "Mmm, esa no es la palabra exacta... ¡intenta escribirla otra vez, mi amor! 😘"
+        },
+        {
+          type: "choice",
+          question: "[PREGUNTA 3 (Opción múltiple): Ej. ¿Qué día exacto empezamos a ser novios?]",
+          image: "", // <-- Ejemplo sin imagen: se ocultará el cuadro de foto automáticamente
+          options: [
+            "Opción A (Ejemplo: 14 de febrero)",
+            "Opción B (Ejemplo: 21 de noviembre)",
+            "Opción C (Ejemplo: 5 de mayo)",
+            "Opción D (Ejemplo: 10 de octubre)"
+          ],
+          correctIndex: 1,
+          successMessage: "¡Correcto! El mejor día de mi vida. ✨",
+          errorMessage: "¡Ay! Revisa el calendario del corazón e inténtalo de nuevo. 😉"
+        },
+        {
+          type: "text",
+          question: "[PREGUNTA 4 (Pregunta abierta libre): Ej. Escribe cuál ha sido tu momento favorito juntos este año ❤️]",
+          image: "https://placehold.co/600x350/fce7f3/9d174d?text=Foto+Recuerdo+4+(Opcional)",
+          placeholder: "Escribe todo lo que quieras aquí...",
+          anyAnswerValid: true, // <-- true = acepta cualquier texto bonito que escriba y lo guarda
+          successMessage: "¡Qué hermoso! Guardaré estas palabras en mi corazón (y en esta app). 🎉🎁",
+          errorMessage: "Por favor escribe aunque sea unas palabritas antes de continuar. 💕"
+        },
+        {
+          type: "choice",
+          question: "[PREGUNTA 5 (Opción múltiple): Ej. ¿Cuál es nuestra comida favorita para pedir juntos?]",
+          image: "https://placehold.co/600x350/fff1f2/be123c?text=Foto+Recuerdo+5+(Opcional)",
+          options: [
+            "Opción A (Ejemplo: Sushi)",
+            "Opción B (Ejemplo: Tacos / Comida mexicana)",
+            "Opción C (Ejemplo: Hamburguesas)",
+            "Opción D (Ejemplo: Pasta italiana)"
+          ],
+          correctIndex: 0,
+          successMessage: "¡Siii! Ya hasta me dio hambre de pensarlo. 😋❤️",
+          errorMessage: "¡Uy, casi! Piensa en lo que siempre pedimos cuando tenemos antojo. 😉"
+        },
+        {
+          type: "text",
+          question: "[PREGUNTA 6 (Escribir respuesta exacta): Ej. ¿Cuál es el nombre de nuestra canción o artista favorito?]",
+          image: "",
+          placeholder: "Escribe el nombre aquí...",
+          anyAnswerValid: false,
+          acceptedAnswers: [
+            "ejemplo cancion",
+            "nombre de la cancion"
+          ],
+          successMessage: "¡Esa misma! Siempre me recuerda a ti cuando suena. 🎶💕",
+          errorMessage: "Mmm, prueba escribiendo solo el nombre principal de la canción o artista. 😘"
+        },
+        {
+          type: "choice",
+          question: "[PREGUNTA 7 (Opción múltiple): Ej. ¿Cuál fue nuestro primer viaje o escapada juntos?]",
+          image: "https://placehold.co/600x350/fef3c7/92400e?text=Foto+Recuerdo+7+(Opcional)",
+          options: [
+            "Opción A (Ejemplo: A la playa)",
+            "Opción B (Ejemplo: A la montaña)",
+            "Opción C (Ejemplo: A otra ciudad)",
+            "Opción D (Ejemplo: De camping)"
+          ],
+          correctIndex: 2,
+          successMessage: "¡Qué aventura tan increíble fue esa! Quiero repetirla pronto. ✈️✨",
+          errorMessage: "¡Casi! Recuerda bien nuestras fotos de ese paseo. 📸"
+        },
+        {
+          type: "text",
+          question: "[PREGUNTA 8 (Pregunta abierta libre): Ej. Si pudieras describir nuestra relación en tres palabras, ¿cuáles serían?]",
+          image: "",
+          placeholder: "Escribe tus tres palabras aquí...",
+          anyAnswerValid: true,
+          successMessage: "¡Me encanta cómo lo defines! Qué bonito leerte. 🥰",
+          errorMessage: "Escribe aunque sea unas palabritas antes de seguir, mi amor. 💕"
+        },
+        {
+          type: "choice",
+          question: "[PREGUNTA 9 (Opción múltiple): Ej. ¿Qué es lo primero que noté de ti cuando nos conocimos?]",
+          image: "https://placehold.co/600x350/fce7f3/9d174d?text=Foto+Recuerdo+9+(Opcional)",
+          options: [
+            "Opción A (Ejemplo: Tu sonrisa)",
+            "Opción B (Ejemplo: Tus ojos)",
+            "Opción C (Ejemplo: Tu sentido del humor)",
+            "Opción D (Ejemplo: Tu forma de hablar)"
+          ],
+          correctIndex: 0,
+          successMessage: "¡Totalmente! Me dejaste enamorado desde el primer segundo. 😍",
+          errorMessage: "¡Casi! Pista: es algo que me ilumina todos los días. ✨"
+        },
+        {
+          type: "text",
+          question: "[PREGUNTA 10 (Pregunta abierta libre final): Ej. Escribe un deseo o plan que quieras que cumplamos juntos este nuevo año ❤️]",
+          image: "https://placehold.co/600x350/ffe4e6/881337?text=Foto+Recuerdo+10+(Opcional)",
+          placeholder: "Escribe tu deseo aquí para desbloquear tu regalo...",
+          anyAnswerValid: true,
+          successMessage: "¡Prometido que haremos todo lo posible por cumplirlo! ¡Ahora sí, mira tu regalo! 🎁🎉",
+          errorMessage: "Escribe tu deseo primero para abrir la última puerta, mi amor. 💕"
+        }
+      ],
+
+      // 5. Pantalla Final: Carta de Aniversario y Ubicación Exacta del Regalo
+      reward: {
+        title: "¡Feliz Aniversario, Mi Amor!",
+        image: "https://placehold.co/600x350/ffe4e6/881337?text=Nuestra+Foto+Especial+%F0%9F%92%96", // <-- REEMPLAZA CON VUESTRA MEJOR FOTO
+        message: "Gracias por cada risa, cada abrazo y cada momento increíble a tu lado.\n\nEste pequeño juego es solo una muestra de cuánto me importas. ¡Te amo muchísimo y espero que te encante tu regalo!",
+        
+        // AQUÍ PONES LA UBICACIÓN EXACTA DEL REGALO:
+        locationName: "[Escribe aquí el lugar: Ej. En el armario de mi cuarto / En el restaurante X]",
+        locationDetails: "[Escribe aquí la pista exacta: Ej. Abre el segundo cajón debajo de mis camisas, o busca detrás del cojín azul del sofá.]",
+        
+        // Opcional: Si el regalo está en un lugar físico con enlace de Google Maps, pégalo aquí. Si es dentro de casa, déjalo en ""
+        googleMapsUrl: "" 
+      }
+    };
+
+    // =====================================================================
+    // LÓGICA DE LA APLICACIÓN Y GUARDADO EN LOCALSTORAGE (GITHUB PAGES READY)
+    // =====================================================================
+    let appState = {
+      currentQuestionIndex: 0,
+      completed: false,
+      writtenAnswers: {} // Guarda { indicePregunta: "texto escrito por ella" }
+    };
+    let isTransitioning = false;
+
+    // Cargar progreso guardado en localStorage
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(CONFIG.storageKey);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          appState = {
+            currentQuestionIndex: typeof parsed.currentQuestionIndex === "number" ? parsed.currentQuestionIndex : 0,
+            completed: Boolean(parsed.completed),
+            writtenAnswers: parsed.writtenAnswers && typeof parsed.writtenAnswers === "object" ? parsed.writtenAnswers : {}
+          };
+          // Asegurar que el índice no exceda el total de preguntas si se editó CONFIG
+          if (appState.currentQuestionIndex >= CONFIG.questions.length) {
+            appState.currentQuestionIndex = 0;
+          }
+        }
+      } catch (e) {
+        console.warn("No se pudo leer localStorage:", e);
+      }
+    }
+
+    // Guardar progreso en localStorage
+    function saveProgress() {
+      try {
+        localStorage.setItem(CONFIG.storageKey, JSON.stringify(appState));
+      } catch (e) {
+        console.warn("No se pudo guardar en localStorage:", e);
+      }
+    }
+
+    // Normalizar texto (quita tildes, pasa a minúsculas y limpia espacios)
+    function normalizeText(str) {
+      return str
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    // Inicialización al cargar la página
+    window.addEventListener("DOMContentLoaded", () => {
+      loadProgress();
+      initFakeLoading();
+      renderMenu();
+    });
+
+    // 1. Pantalla de Carga Falsa ("Fake Loading")
+    function initFakeLoading() {
+      const bar = document.getElementById("loading-progress-bar");
+      const percentText = document.getElementById("loading-percentage");
+      const statusText = document.getElementById("loading-status-text");
+
+      const totalSteps = 100;
+      const intervalTime = CONFIG.loadingDurationMs / totalSteps;
+      let progress = 0;
+
+      const timer = setInterval(() => {
+        progress++;
+        bar.style.width = `${progress}%`;
+        percentText.textContent = `${progress}%`;
+
+        // Cambiar mensaje según el porcentaje
+        const msgIndex = Math.min(
+          Math.floor((progress / 100) * CONFIG.loadingMessages.length),
+          CONFIG.loadingMessages.length - 1
+        );
+        statusText.textContent = CONFIG.loadingMessages[msgIndex];
+
+        if (progress >= 100) {
+          clearInterval(timer);
+          setTimeout(() => {
+            switchScreen("screen-menu");
+          }, 450);
+        }
+      }, intervalTime);
+    }
+
+    // Cambio limpio entre pantallas
+    function switchScreen(targetId) {
+      const screens = ["screen-loading", "screen-menu", "screen-quiz", "screen-reward"];
+      screens.forEach((id) => {
+        const el = document.getElementById(id);
+        if (id === targetId) {
+          el.classList.remove("hidden");
+          // Reiniciar animación fade-in
+          el.classList.remove("fade-in");
+          void el.offsetWidth;
+          el.classList.add("fade-in");
+        } else {
+          el.classList.add("hidden");
+        }
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // 2. Renderizar el Menú de Misiones (Quests)
+    function renderMenu() {
+      document.getElementById("menu-title").textContent = CONFIG.menuTitle;
+      document.getElementById("menu-subtitle").textContent = CONFIG.menuSubtitle;
+
+      const container = document.getElementById("quests-container");
+      container.innerHTML = "";
+
+      CONFIG.quests.forEach((quest, index) => {
+        const card = document.createElement("div");
+
+        if (!quest.locked) {
+          const isCompleted = index === 0 && appState.completed;
+          const hasInProgress = index === 0 && !appState.completed && appState.currentQuestionIndex > 0;
+
+          // Tarjeta de Misión Desbloqueada (Activa)
+          card.className = "group bg-white rounded-3xl shadow-lg border-2 border-rose-200 hover:border-rose-400 overflow-hidden transition-all duration-300";
+
+          const badgeLabel = isCompleted ? "✅ Misión Completada" : quest.badge;
+          const imageHtml = quest.image
+            ? `<div class="h-40 w-full overflow-hidden bg-rose-50 relative cursor-pointer" onclick="handleMainQuestClick()">
+                 <img src="${quest.image}" alt="${quest.title}" onerror="this.parentElement.style.display='none'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                 <span class="absolute top-3 left-3 ${isCompleted ? "bg-emerald-600" : "bg-rose-600"} text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                   ${badgeLabel}
+                 </span>
+               </div>`
+            : "";
+
+          // Botones de acción según estado guardado
+          let actionAreaHtml = "";
+          if (isCompleted) {
+            actionAreaHtml = `
+              <div class="mt-4 pt-3 border-t border-rose-100 flex flex-col sm:flex-row gap-2">
+                <button onclick="showRewardScreen(false)" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white text-xs sm:text-sm font-semibold shadow transition">
+                  🎁 Ver ubicación del regalo
+                </button>
+                <button onclick="startQuiz(true)" class="py-2.5 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs sm:text-sm font-semibold border border-rose-200 transition">
+                  🔄 Jugar de nuevo
+                </button>
+              </div>
+            `;
+          } else {
+            const statusText = hasInProgress
+              ? `⏳ Continuar (Pregunta ${appState.currentQuestionIndex + 1} de ${CONFIG.questions.length})`
+              : "✨ Toca para comenzar el reto";
+
+            actionAreaHtml = `
+              <div onclick="startQuiz(false)" class="mt-4 pt-3 border-t border-rose-100 flex items-center justify-between text-xs font-semibold text-rose-600 cursor-pointer">
+                <span>${statusText}</span>
+                <span>${CONFIG.questions.length} preguntas</span>
+              </div>
+            `;
+          }
+
+          card.innerHTML = `
+            ${imageHtml}
+            <div class="p-6">
+              ${!quest.image ? `<span class="inline-block ${isCompleted ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"} text-xs font-bold px-3 py-1 rounded-full mb-2">${badgeLabel}</span>` : ""}
+              <div onclick="handleMainQuestClick()" class="flex items-start justify-between gap-3 cursor-pointer">
+                <div>
+                  <h2 class="font-serif-romantic text-xl sm:text-2xl font-bold text-rose-950 group-hover:text-rose-600 transition">
+                    ${quest.title}
+                  </h2>
+                  <p class="text-sm text-rose-800/80 mt-1 leading-relaxed">
+                    ${quest.description}
+                  </p>
+                </div>
+                <div class="shrink-0 w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold group-hover:bg-rose-600 group-hover:text-white transition">
+                  ${isCompleted ? "🎁" : "▶"}
+                </div>
+              </div>
+              ${actionAreaHtml}
+            </div>
+          `;
+        } else {
+          // Tarjeta de Misión Bloqueada (Futura)
+          card.className = "bg-white/60 rounded-3xl border border-rose-200/70 p-5 flex items-center gap-4 opacity-75 select-none";
+          card.innerHTML = `
+            <div class="w-12 h-12 rounded-2xl bg-rose-100/80 text-rose-400 flex items-center justify-center shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </div>
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-rose-400">${quest.badge}</span>
+              <h3 class="font-serif-romantic text-lg font-bold text-rose-900/70">${quest.title}</h3>
+              <p class="text-xs text-rose-700/60 mt-0.5">${quest.description}</p>
+            </div>
+          `;
+        }
+
+        container.appendChild(card);
+      });
+    }
+
+    function handleMainQuestClick() {
+      if (appState.completed) {
+        showRewardScreen(false);
+      } else {
+        startQuiz(false);
+      }
+    }
+
+    function goToMenu() {
+      renderMenu();
+      switchScreen("screen-menu");
+    }
+
+    // 3. Lógica del Quiz (Soporta opción múltiple y escritura libre)
+    function startQuiz(restartFromZero = false) {
+      if (restartFromZero) {
+        appState.currentQuestionIndex = 0;
+        saveProgress();
+      }
+      isTransitioning = false;
+      switchScreen("screen-quiz");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const total = CONFIG.questions.length;
+      const idx = appState.currentQuestionIndex;
+      const q = CONFIG.questions[idx];
+
+      // Actualizar contadores y barra
+      document.getElementById("quiz-progress-label").textContent = `Pregunta ${idx + 1} de ${total}`;
+      const pct = ((idx + 1) / total) * 100;
+      document.getElementById("quiz-progress-bar").style.width = `${pct}%`;
+
+      // Imagen opcional
+      const imgWrapper = document.getElementById("quiz-image-wrapper");
+      const imgEl = document.getElementById("quiz-image");
+      if (q.image && q.image.trim() !== "") {
+        imgEl.src = q.image;
+        imgEl.onerror = () => imgWrapper.classList.add("hidden");
+        imgWrapper.classList.remove("hidden");
+      } else {
+        imgWrapper.classList.add("hidden");
+      }
+
+      // Texto de pregunta
+      document.getElementById("quiz-question-text").textContent = q.question;
+
+      // Limpiar feedback previo
+      const feedbackEl = document.getElementById("quiz-feedback");
+      feedbackEl.classList.add("hidden");
+      feedbackEl.textContent = "";
+
+      const optionsContainer = document.getElementById("quiz-options-container");
+      const textForm = document.getElementById("quiz-text-form");
+      const textInput = document.getElementById("quiz-text-input");
+
+      if (q.type === "text") {
+        // Modo pregunta para escribir
+        optionsContainer.classList.add("hidden");
+        textForm.classList.remove("hidden");
+        textInput.placeholder = q.placeholder || "Escribe tu respuesta aquí, mi amor...";
+        textInput.value = appState.writtenAnswers[idx] || "";
+        setTimeout(() => textInput.focus(), 150);
+      } else {
+        // Modo opción múltiple ("choice")
+        textForm.classList.add("hidden");
+        optionsContainer.classList.remove("hidden");
+        optionsContainer.innerHTML = "";
+
+        const letters = ["A", "B", "C", "D", "E"];
+        (q.options || []).forEach((optText, optIdx) => {
+          const btn = document.createElement("button");
+          btn.className = "w-full text-left p-4 rounded-2xl border-2 border-rose-100 bg-rose-50/40 hover:bg-rose-100/70 hover:border-rose-300 text-rose-950 font-medium text-sm sm:text-base transition-all duration-200 flex items-center gap-3 active:scale-[0.99]";
+          btn.innerHTML = `
+            <span class="w-8 h-8 rounded-xl bg-white border border-rose-200 text-rose-600 font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+              ${letters[optIdx] || optIdx + 1}
+            </span>
+            <span>${optText}</span>
+          `;
+          btn.onclick = () => handleChoiceAnswer(optIdx, btn);
+          optionsContainer.appendChild(btn);
+        });
+      }
+    }
+
+    function advanceAfterCorrectAnswer(q) {
+      isTransitioning = true;
+      const feedbackEl = document.getElementById("quiz-feedback");
+      feedbackEl.className = "mt-5 p-4 rounded-2xl text-sm font-semibold text-center bg-emerald-50 text-emerald-800 border border-emerald-200 fade-in";
+      feedbackEl.textContent = q.successMessage;
+      feedbackEl.classList.remove("hidden");
+
+      setTimeout(() => {
+        appState.currentQuestionIndex++;
+        isTransitioning = false;
+
+        if (appState.currentQuestionIndex < CONFIG.questions.length) {
+          saveProgress();
+          renderQuestion();
+        } else {
+          appState.completed = true;
+          appState.currentQuestionIndex = 0;
+          saveProgress();
+          showRewardScreen(true);
+        }
+      }, 1600);
+    }
+
+    function handleChoiceAnswer(selectedIndex, buttonEl) {
+      if (isTransitioning) return;
+
+      const q = CONFIG.questions[appState.currentQuestionIndex];
+      const feedbackEl = document.getElementById("quiz-feedback");
+
+      if (selectedIndex === q.correctIndex) {
+        buttonEl.classList.remove("border-rose-100", "bg-rose-50/40");
+        buttonEl.classList.add("border-emerald-400", "bg-emerald-50", "text-emerald-900");
+        advanceAfterCorrectAnswer(q);
+      } else {
+        buttonEl.classList.remove("animate-shake");
+        void buttonEl.offsetWidth;
+        buttonEl.classList.add("animate-shake", "border-rose-400", "bg-rose-100/80");
+
+        feedbackEl.className = "mt-5 p-4 rounded-2xl text-sm font-semibold text-center bg-amber-50 text-amber-900 border border-amber-200 fade-in";
+        feedbackEl.textContent = q.errorMessage;
+        feedbackEl.classList.remove("hidden");
+      }
+    }
+
+    function handleTextSubmit(event) {
+      event.preventDefault();
+      if (isTransitioning) return;
+
+      const idx = appState.currentQuestionIndex;
+      const q = CONFIG.questions[idx];
+      const inputEl = document.getElementById("quiz-text-input");
+      const feedbackEl = document.getElementById("quiz-feedback");
+      const rawValue = inputEl.value.trim();
+
+      if (!rawValue) {
+        inputEl.classList.remove("animate-shake");
+        void inputEl.offsetWidth;
+        inputEl.classList.add("animate-shake");
+        feedbackEl.className = "mt-5 p-4 rounded-2xl text-sm font-semibold text-center bg-amber-50 text-amber-900 border border-amber-200 fade-in";
+        feedbackEl.textContent = "Escribe tu respuesta primero, mi amor. 💕";
+        feedbackEl.classList.remove("hidden");
+        return;
+      }
+
+      let isValid = false;
+      if (q.anyAnswerValid) {
+        isValid = true;
+      } else {
+        const normalizedUser = normalizeText(rawValue);
+        const acceptedList = (q.acceptedAnswers || []).map(normalizeText);
+        isValid = acceptedList.includes(normalizedUser);
+      }
+
+      if (isValid) {
+        // Guardar lo que ella escribió
+        appState.writtenAnswers[idx] = rawValue;
+        saveProgress();
+        advanceAfterCorrectAnswer(q);
+      } else {
+        inputEl.classList.remove("animate-shake");
+        void inputEl.offsetWidth;
+        inputEl.classList.add("animate-shake", "border-rose-400");
+
+        feedbackEl.className = "mt-5 p-4 rounded-2xl text-sm font-semibold text-center bg-amber-50 text-amber-900 border border-amber-200 fade-in";
+        feedbackEl.textContent = q.errorMessage;
+        feedbackEl.classList.remove("hidden");
+      }
+    }
+
+    // 4. Pantalla Final y Celebración
+    function showRewardScreen(withConfetti = true) {
+      document.getElementById("reward-title").textContent = CONFIG.reward.title;
+      document.getElementById("reward-message").textContent = CONFIG.reward.message;
+      document.getElementById("reward-location-name").textContent = CONFIG.reward.locationName;
+      document.getElementById("reward-location-details").textContent = CONFIG.reward.locationDetails;
+
+      // Mostrar las respuestas escritas que quedaron guardadas
+      const notesWrapper = document.getElementById("reward-saved-notes-wrapper");
+      const notesList = document.getElementById("reward-saved-notes-list");
+      notesList.innerHTML = "";
+
+      const entries = Object.entries(appState.writtenAnswers);
+      if (entries.length > 0) {
+        entries.forEach(([qIdx, answerText]) => {
+          const questionObj = CONFIG.questions[Number(qIdx)];
+          if (questionObj && answerText) {
+            const item = document.createElement("div");
+            item.className = "bg-rose-50/60 p-3.5 rounded-xl border border-rose-100";
+            item.innerHTML = `
+              <p class="text-xs font-semibold text-rose-600 mb-1">${questionObj.question}</p>
+              <p class="text-sm text-rose-950 italic">“${escapeHtml(answerText)}”</p>
+            `;
+            notesList.appendChild(item);
+          }
+        });
+        notesWrapper.classList.toggle("hidden", notesList.children.length === 0);
+      } else {
+        notesWrapper.classList.add("hidden");
+      }
+
+      const rewardImgWrapper = document.getElementById("reward-image-wrapper");
+      const rewardImg = document.getElementById("reward-image");
+      if (CONFIG.reward.image && CONFIG.reward.image.trim() !== "") {
+        rewardImg.src = CONFIG.reward.image;
+        rewardImg.onerror = () => rewardImgWrapper.classList.add("hidden");
+        rewardImgWrapper.classList.remove("hidden");
+      } else {
+        rewardImgWrapper.classList.add("hidden");
+      }
+
+      const mapsLink = document.getElementById("reward-maps-link");
+      if (CONFIG.reward.googleMapsUrl && CONFIG.reward.googleMapsUrl.trim() !== "") {
+        mapsLink.href = CONFIG.reward.googleMapsUrl;
+        mapsLink.classList.remove("hidden");
+      } else {
+        mapsLink.classList.add("hidden");
+      }
+
+      switchScreen("screen-reward");
+      if (withConfetti) {
+        launchConfetti();
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Funciones para reiniciar progreso desde el pie de página
+    function requestResetProgress() {
+      document.getElementById("reset-confirm-box").classList.remove("hidden");
+    }
+
+    function cancelResetProgress() {
+      document.getElementById("reset-confirm-box").classList.add("hidden");
+    }
+
+    function confirmResetProgress() {
+      try {
+        localStorage.removeItem(CONFIG.storageKey);
+      } catch (e) {}
+      appState = {
+        currentQuestionIndex: 0,
+        completed: false,
+        writtenAnswers: {}
+      };
+      cancelResetProgress();
+      renderMenu();
+    }
+
+    // Copiar pista al portapapeles de forma segura
+    function copyLocationText() {
+      const textToCopy = `${CONFIG.reward.locationName} - ${CONFIG.reward.locationDetails}`;
+      const tempInput = document.createElement("textarea");
+      tempInput.value = textToCopy;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+
+      const confirmMsg = document.getElementById("copy-confirmation");
+      confirmMsg.classList.remove("hidden");
+      setTimeout(() => confirmMsg.classList.add("hidden"), 3000);
+    }
+
+    // Lluvia de corazones y confeti al ganar
+    function launchConfetti() {
+      const emojis = ["❤️", "💖", "✨", "🎁", "💕", "🌹"];
+      for (let i = 0; i < 40; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece text-xl sm:text-2xl";
+        piece.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.animationDuration = `${2.5 + Math.random() * 2.5}s`;
+        piece.style.animationDelay = `${Math.random() * 0.8}s`;
+        document.body.appendChild(piece);
+
+        setTimeout(() => {
+          piece.remove();
+        }, 5500);
+      }
+    }
+  </script>
+</body>
+</html>
